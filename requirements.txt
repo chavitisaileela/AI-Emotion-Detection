@@ -71,7 +71,5 @@ urllib3==2.7.0
 Werkzeug==3.1.8
 wheel==0.48.0
 wrapt==2.4.1
-opencv-contrib-python==5.0.0.93
-deepface
-tensorflow
-numpy
+opencv-contrib-python-headless==5.0.0.93
+
