@@ -1,445 +1,587 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>AI Emotion Detection | LeelaX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Emotion Detection</title>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #0b1020;
+            font-family: Arial, sans-serif;
+            background: #0f0b1f;
             color: white;
         }
-
-        /* HEADER */
-
-        header {
-            background: linear-gradient(
-                135deg,
-                #151b35,
-                #241548
-            );
-
-            padding: 22px 30px;
-
-            border-bottom: 1px solid
-            rgba(255,255,255,0.12);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: auto;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand {
-            font-size: 25px;
-            font-weight: bold;
-        }
-
-        .brand span {
-            color: #b47cff;
-        }
-
-        .status {
-            padding: 8px 15px;
-            border-radius: 20px;
-
-            background: rgba(50,220,120,0.15);
-
-            color: #65f29b;
-
-            font-size: 14px;
-        }
-
-        /* MAIN */
 
         .container {
             max-width: 1200px;
-
-            margin: 30px auto;
-
-            padding: 0 20px;
+            margin: auto;
+            padding: 30px;
         }
 
-        .title {
+        h1 {
             text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .camera-section {
+            background: #19132d;
+            border-radius: 18px;
+            padding: 20px;
             margin-bottom: 25px;
         }
 
-        .title h1 {
-            margin-bottom: 8px;
-            font-size: 34px;
-        }
-
-        .title p {
-            color: #aeb5ca;
-        }
-
-        /* CAMERA CARD */
-
-        .camera-card {
-
-            background: #12182b;
-
-            border: 1px solid
-            rgba(255,255,255,0.10);
-
-            border-radius: 18px;
-
-            padding: 15px;
-
-            box-shadow:
-                0 15px 40px
-                rgba(0,0,0,0.35);
-        }
-
-        .camera-header {
-
-            display: flex;
-
-            justify-content:
-            space-between;
-
-            align-items: center;
-
-            padding: 5px 8px 15px;
-        }
-
-        .camera-header h2 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        .live {
-            color: #ff6b8a;
-            font-size: 14px;
-        }
-
-        .video-container {
-
+        .camera-box {
+            position: relative;
             width: 100%;
-
-            background: #05070e;
-
-            border-radius: 12px;
-
-            overflow: hidden;
-
-            text-align: center;
-        }
-
-        .video-container img {
-
-            width: 100%;
-
-            max-height: 720px;
-
-            object-fit: contain;
-
-            display: block;
-
+            max-width: 900px;
             margin: auto;
+            background: #050509;
+            border-radius: 15px;
+            overflow: hidden;
         }
 
-        /* INFORMATION CARDS */
+        #camera {
+            width: 100%;
+            display: block;
+            transform: scaleX(-1);
+        }
 
-        .features {
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
 
-            display: grid;
-
-            grid-template-columns:
-            repeat(4, 1fr);
-
-            gap: 15px;
-
+        .buttons {
+            text-align: center;
             margin-top: 20px;
         }
 
-        .feature {
+        button {
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-            background: #12182b;
+        #startBtn {
+            background: #7c3aed;
+            color: white;
+        }
 
-            border: 1px solid
-            rgba(255,255,255,0.08);
+        #stopBtn {
+            background: #444;
+            color: white;
+        }
 
-            border-radius: 12px;
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-            padding: 18px;
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            color: #aaa;
+        }
 
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: #19132d;
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
         }
 
-        .feature-icon {
-            font-size: 25px;
+        .card-title {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 10px;
         }
 
-        .feature h3 {
-            margin: 8px 0 5px;
-            font-size: 16px;
+        .card-value {
+            font-size: 28px;
+            font-weight: bold;
         }
 
-        .feature p {
-            margin: 0;
-            color: #9ca5bd;
-            font-size: 13px;
+        .emotions {
+            background: #19132d;
+            padding: 25px;
+            border-radius: 15px;
         }
 
-        /* FOOTER */
+        .emotion-row {
+            margin-bottom: 16px;
+        }
+
+        .emotion-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .bar {
+            width: 100%;
+            height: 10px;
+            background: #302847;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            width: 0%;
+            background: #8b5cf6;
+            transition: width 0.3s ease;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
 
         footer {
-
-            margin-top: 40px;
-
-            padding: 25px;
-
             text-align: center;
-
-            border-top: 1px solid
-            rgba(255,255,255,0.08);
-
-            color: #9ca5bd;
+            color: #777;
+            margin-top: 30px;
+            padding-bottom: 20px;
         }
-
-        .leelax {
-
-            font-size: 20px;
-
-            font-weight: bold;
-
-            color: white;
-
-            margin-bottom: 7px;
-        }
-
-        .leelax span {
-            color: #b47cff;
-        }
-
-        .copyright {
-            font-size: 13px;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 800px) {
-
-            .features {
-
-                grid-template-columns:
-                repeat(2, 1fr);
-
-            }
-
-            .title h1 {
-                font-size: 27px;
-            }
-
-            .header-content {
-                flex-direction: column;
-                gap: 12px;
-            }
-        }
-
-        @media (max-width: 500px) {
-
-            .features {
-                grid-template-columns: 1fr;
-            }
-
-            .container {
-                padding: 0 10px;
-            }
-        }
-
     </style>
-
 </head>
-
 
 <body>
 
-
-<!-- HEADER -->
-
-<header>
-
-    <div class="header-content">
-
-        <div class="brand">
-            AI <span>Emotion Detection</span>
-        </div>
-
-        <div class="status">
-            ● System Active
-        </div>
-
-    </div>
-
-</header>
-
-
-<!-- MAIN -->
-
 <div class="container">
 
-
-    <div class="title">
-
-        <h1>
-            Real-Time Facial Emotion Recognition
-        </h1>
-
-        <p>
-            AI-powered facial analysis using
-            OpenCV and DeepFace
-        </p>
-
+    <h1>AI Emotion Detection</h1>
+    <div class="subtitle">
+        Real-time facial emotion analysis using AI
     </div>
 
+    <div class="camera-section">
 
-    <!-- CAMERA -->
-
-    <div class="camera-card">
-
-        <div class="camera-header">
-
-            <h2>
-                📷 Live Camera Analysis
-            </h2>
-
-            <div class="live">
-                ● LIVE
-            </div>
-
+        <div class="camera-box">
+            <video id="camera" autoplay playsinline muted></video>
+            <canvas id="overlay"></canvas>
         </div>
 
+        <div class="buttons">
+            <button id="startBtn">Start Camera</button>
+            <button id="stopBtn" disabled>Stop Camera</button>
+        </div>
 
-        <div class="video-container">
-
-            <img
-                src="{{ url_for('video') }}"
-                alt="Live Emotion Detection Camera"
-            >
-
+        <div class="status" id="status">
+            Camera is stopped.
         </div>
 
     </div>
 
+    <div class="dashboard">
 
-    <!-- FEATURES -->
-
-    <div class="features">
-
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                😊
-            </div>
-
-            <h3>
-                Emotion Detection
-            </h3>
-
-            <p>
-                Happy, Sad, Angry, Fear,
-                Surprise, Disgust and Neutral
-            </p>
-
+        <div class="card">
+            <div class="card-title">Detected Emotion</div>
+            <div class="card-value" id="emotion">—</div>
         </div>
 
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                👁️
-            </div>
-
-            <h3>
-                Eye Detection
-            </h3>
-
-            <p>
-                Detects visible eyes
-                in the face
-            </p>
-
+        <div class="card">
+            <div class="card-title">Confidence</div>
+            <div class="card-value" id="confidence">0%</div>
         </div>
 
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                😄
-            </div>
-
-            <h3>
-                Smile Detection
-            </h3>
-
-            <p>
-                Detects smile regions
-                using OpenCV
-            </p>
-
+        <div class="card">
+            <div class="card-title">Faces Detected</div>
+            <div class="card-value" id="faceCount">0</div>
         </div>
-
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                👃
-            </div>
-
-            <h3>
-                Facial Features
-            </h3>
-
-            <p>
-                Face, eyebrows and
-                nose region analysis
-            </p>
-
-        </div>
-
 
     </div>
 
+    <div class="emotions">
+
+        <h2>Emotion Analysis</h2>
+
+        <div class="emotion-row">
+            <div class="emotion-header">
+                <span>Happy</span>
+                <span id="happyValue">0%</span>
+            </div>
+            <div class="bar"><div class="fill" id="happyBar"></div></div>
+        </div>
+
+        <div class="emotion-row">
+            <div class="emotion-header">
+                <span>Sad</span>
+                <span id="sadValue">0%</span>
+            </div>
+            <div class="bar"><div class="fill" id="sadBar"></div></div>
+        </div>
+
+        <div class="emotion-row">
+            <div class="emotion-header">
+                <span>Angry</span>
+                <span id="angryValue">0%</span>
+            </div>
+            <div class="bar"><div class="fill" id="angryBar"></div></div>
+        </div>
+
+        <div class="emotion-row">
+            <div class="emotion-header">
+                <span>Fear</span>
+                <span id="fearValue">0%</span>
+            </div>
+            <div class="bar"><div class="fill" id="fearBar"></div></div>
+        </div>
+
+        <div class="emotion-row">
+            <div class="emotion-header">
+                <span>Surprise</span>
+                <span id="surpriseValue">0%</span>
+            </div>
+            <div class="bar"><div class="fill" id="surpriseBar"></div></div>
+        </div>
+
+        <div class="emotion-row">
+            <div class="emotion-header">
+                <span>Disgust</span>
+                <span id="disgustValue">0%</span>
+            </div>
+            <div class="bar"><div class="fill" id="disgustBar"></div></div>
+        </div>
+
+        <div class="emotion-row">
+            <div class="emotion-header">
+                <span>Neutral</span>
+                <span id="neutralValue">0%</span>
+            </div>
+            <div class="bar"><div class="fill" id="neutralBar"></div></div>
+        </div>
+
+    </div>
+
+    <footer>
+        Powered by LeelaX | AI Emotion Detection Project
+    </footer>
 
 </div>
 
+<script>
 
-<!-- FOOTER -->
+const video = document.getElementById("camera");
+const canvas = document.getElementById("overlay");
 
-<footer>
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
 
-    <div class="leelax">
-        Powered by <span>LeelaX</span>
-    </div>
+const statusText = document.getElementById("status");
 
-    <div class="copyright">
-        AI Emotion Detection Project
-    </div>
+let stream = null;
+let analysisTimer = null;
+let analyzing = false;
 
-</footer>
+startBtn.addEventListener("click", startCamera);
+stopBtn.addEventListener("click", stopCamera);
 
+async function startCamera() {
+
+    try {
+
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                width: { ideal: 640 },
+                height: { ideal: 360 },
+                facingMode: "user"
+            },
+            audio: false
+        });
+
+        video.srcObject = stream;
+
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+
+        statusText.textContent = "Camera started. Analyzing...";
+        statusText.classList.remove("error");
+
+        analysisTimer = setInterval(analyzeFrame, 1000);
+
+    } catch (error) {
+
+        console.error(error);
+
+        statusText.textContent =
+            "Camera permission was denied or camera is unavailable.";
+
+        statusText.classList.add("error");
+    }
+}
+
+function stopCamera() {
+
+    if (analysisTimer) {
+        clearInterval(analysisTimer);
+        analysisTimer = null;
+    }
+
+    if (stream) {
+
+        stream.getTracks().forEach(track => track.stop());
+
+        stream = null;
+    }
+
+    video.srcObject = null;
+
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+
+    statusText.textContent = "Camera is stopped.";
+
+    clearOverlay();
+}
+
+async function analyzeFrame() {
+
+    if (!stream || analyzing || video.readyState < 2) {
+        return;
+    }
+
+    analyzing = true;
+
+    try {
+
+        const captureCanvas = document.createElement("canvas");
+
+        captureCanvas.width = 640;
+        captureCanvas.height = 360;
+
+        const context = captureCanvas.getContext("2d");
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            captureCanvas.width,
+            captureCanvas.height
+        );
+
+        const imageData = captureCanvas.toDataURL(
+            "image/jpeg",
+            0.75
+        );
+
+        const response = await fetch("/analyze", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                frame: imageData
+            })
+
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || "Analysis failed");
+        }
+
+        updateDashboard(result);
+
+    } catch (error) {
+
+        console.error("Analysis error:", error);
+
+        statusText.textContent =
+            "Unable to connect to the AI analysis server.";
+
+        statusText.classList.add("error");
+
+    } finally {
+
+        analyzing = false;
+    }
+}
+
+function updateDashboard(result) {
+
+    statusText.textContent = "AI analysis running...";
+    statusText.classList.remove("error");
+
+    document.getElementById("faceCount").textContent =
+        result.face_count || 0;
+
+    clearOverlay();
+
+    if (!result.faces || result.faces.length === 0) {
+
+        document.getElementById("emotion").textContent = "No face";
+
+        document.getElementById("confidence").textContent = "0%";
+
+        resetEmotionBars();
+
+        return;
+    }
+
+    const face = result.faces[0];
+
+    const emotion =
+        face.emotion || "neutral";
+
+    const confidence =
+        face.confidence || 0;
+
+    document.getElementById("emotion").textContent =
+        emotion.charAt(0).toUpperCase() + emotion.slice(1);
+
+    document.getElementById("confidence").textContent =
+        confidence.toFixed(1) + "%";
+
+    updateEmotionBars(face.emotions || {});
+
+    drawFace(face);
+}
+
+function updateEmotionBars(emotions) {
+
+    const names = [
+        "happy",
+        "sad",
+        "angry",
+        "fear",
+        "surprise",
+        "disgust",
+        "neutral"
+    ];
+
+    names.forEach(name => {
+
+        const value = Number(emotions[name] || 0);
+
+        document.getElementById(name + "Value").textContent =
+            value.toFixed(1) + "%";
+
+        document.getElementById(name + "Bar").style.width =
+            Math.min(value, 100) + "%";
+    });
+}
+
+function resetEmotionBars() {
+
+    const names = [
+        "happy",
+        "sad",
+        "angry",
+        "fear",
+        "surprise",
+        "disgust",
+        "neutral"
+    ];
+
+    names.forEach(name => {
+
+        document.getElementById(name + "Value").textContent =
+            "0%";
+
+        document.getElementById(name + "Bar").style.width =
+            "0%";
+    });
+}
+
+function drawFace(face) {
+
+    const rect = video.getBoundingClientRect();
+
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 360;
+
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    const scaleX =
+        canvas.width / 640;
+
+    const scaleY =
+        canvas.height / 360;
+
+    const x = face.x * scaleX;
+    const y = face.y * scaleY;
+    const w = face.w * scaleX;
+    const h = face.h * scaleY;
+
+    ctx.strokeStyle = "#8b5cf6";
+    ctx.lineWidth = 3;
+
+    ctx.strokeRect(
+        x,
+        y,
+        w,
+        h
+    );
+
+    ctx.font = "bold 18px Arial";
+
+    ctx.fillStyle = "#8b5cf6";
+
+    const label =
+        (face.emotion || "neutral").toUpperCase();
+
+    ctx.fillText(
+        label,
+        x,
+        Math.max(22, y - 8)
+    );
+}
+
+function clearOverlay() {
+
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 360;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+}
+
+</script>
 
 </body>
-
 </html>
