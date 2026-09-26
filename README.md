@@ -2,6 +2,8 @@
 
 A real-time **AI-based facial emotion detection system** using Python, OpenCV, DeepFace, and TensorFlow. The application uses a webcam to detect multiple faces and display individual emotion predictions, emotion percentages, eye count, smile detection, nose region, confidence, FPS, and total face count directly on the camera interface.
 
+https://emotion-detection-ai-wtqd.onrender.com/
+
 ## Project Overview
 
 The **AI Emotion Detection** system is a computer vision application designed to analyze facial expressions in real time through a webcam.
