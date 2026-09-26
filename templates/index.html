@@ -1,587 +1,4742 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
+    <!-- ===================================================== -->
+    <!-- BASIC HTML SETTINGS                                   -->
+    <!-- ===================================================== -->
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Emotion Detection</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Real-time AI facial emotion detection using Python, Flask, OpenCV and DeepFace."
+    >
+
+    <meta
+        name="theme-color"
+        content="#0f0b1f"
+    >
+
+    <title>Emotion Detection Using AI</title>
+
+
+    <!-- ===================================================== -->
+    <!-- PAGE STYLES                                           -->
+    <!-- ===================================================== -->
 
     <style>
+
+        /* =================================================== */
+        /* GLOBAL RESET                                        */
+        /* =================================================== */
+
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0f0b1f;
-            color: white;
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #25164d 0%,
+                    #0f0b1f 40%,
+                    #080611 100%
+                );
+
+            color: #ffffff;
+
+            line-height: 1.5;
+
+            overflow-x: hidden;
         }
+
+
+        /* =================================================== */
+        /* PAGE CONTAINER                                      */
+        /* =================================================== */
 
         .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 30px;
-        }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #aaa;
-            margin-bottom: 30px;
-        }
-
-        .camera-section {
-            background: #19132d;
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .camera-box {
-            position: relative;
             width: 100%;
-            max-width: 900px;
-            margin: auto;
-            background: #050509;
-            border-radius: 15px;
-            overflow: hidden;
+
+            max-width: 1250px;
+
+            margin: 0 auto;
+
+            padding:
+                25px
+                20px
+                40px;
         }
 
-        #camera {
-            width: 100%;
-            display: block;
-            transform: scaleX(-1);
-        }
 
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
+        /* =================================================== */
+        /* HEADER                                              */
+        /* =================================================== */
 
-        .buttons {
+        .header {
+
             text-align: center;
-            margin-top: 20px;
+
+            padding:
+                15px
+                10px
+                30px;
         }
 
-        button {
-            border: none;
-            padding: 12px 25px;
-            margin: 5px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-        }
 
-        #startBtn {
-            background: #7c3aed;
-            color: white;
-        }
+        .logo-circle {
 
-        #stopBtn {
-            background: #444;
-            color: white;
-        }
+            width: 70px;
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+            height: 70px;
 
-        .status {
-            text-align: center;
-            margin-top: 15px;
-            color: #aaa;
-        }
+            margin:
+                0 auto
+                18px;
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+            border-radius: 50%;
 
-        .card {
-            background: #19132d;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-        }
+            display: flex;
 
-        .card-title {
-            color: #aaa;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
+            align-items: center;
 
-        .card-value {
-            font-size: 28px;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #6d28d9
+                );
+
+            box-shadow:
+                0 0 35px
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.45
+                );
+
+            font-size: 30px;
+
             font-weight: bold;
         }
 
-        .emotions {
-            background: #19132d;
-            padding: 25px;
-            border-radius: 15px;
+
+        .header h1 {
+
+            font-size:
+                clamp(
+                    30px,
+                    5vw,
+                    48px
+                );
+
+            font-weight: 800;
+
+            letter-spacing:
+                -1px;
+
+            margin-bottom: 8px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff,
+                    #c4b5fd,
+                    #a78bfa
+                );
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color:
+                transparent;
+
+            background-clip: text;
         }
 
-        .emotion-row {
+
+        .subtitle {
+
+            color: #aaa4bd;
+
+            font-size: 16px;
+
+            max-width: 700px;
+
+            margin: 0 auto;
+        }
+
+
+        /* =================================================== */
+        /* TOP STATUS                                          */
+        /* =================================================== */
+
+        .top-status {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-top: 18px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .status-pill {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                7px
+                14px;
+
+            border-radius: 50px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.06
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.08
+                );
+
+            color: #bbb4cd;
+
+            font-size: 13px;
+        }
+
+
+        .status-dot {
+
+            width: 9px;
+
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #777;
+        }
+
+
+        .status-dot.online {
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 10px
+                rgba(
+                    34,
+                    197,
+                    94,
+                    0.8
+                );
+        }
+
+
+        .status-dot.offline {
+
+            background: #ef4444;
+
+            box-shadow:
+                0 0 10px
+                rgba(
+                    239,
+                    68,
+                    68,
+                    0.6
+                );
+        }
+
+
+        /* =================================================== */
+        /* MAIN CAMERA CARD                                    */
+        /* =================================================== */
+
+        .camera-section {
+
+            background:
+                rgba(
+                    25,
+                    19,
+                    45,
+                    0.92
+                );
+
+            border:
+                1px solid
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.15
+                );
+
+            border-radius: 22px;
+
+            padding: 22px;
+
+            margin-bottom: 24px;
+
+            box-shadow:
+                0 20px 60px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.25
+                );
+        }
+
+
+        .section-title {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .section-title h2 {
+
+            font-size: 21px;
+
+            font-weight: 700;
+        }
+
+
+        .section-title span {
+
+            color: #9991ad;
+
+            font-size: 13px;
+        }
+
+
+        /* =================================================== */
+        /* CAMERA BOX                                         */
+        /* =================================================== */
+
+        .camera-box {
+
+            position: relative;
+
+            width: 100%;
+
+            max-width: 1000px;
+
+            margin: 0 auto;
+
+            background: #030207;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            aspect-ratio: 16 / 9;
+
+            border:
+                1px solid
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.25
+                );
+
+            box-shadow:
+                inset 0 0 50px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.5
+                );
+        }
+
+
+        /* =================================================== */
+        /* VIDEO                                               */
+        /* =================================================== */
+
+        #camera {
+
+            width: 100%;
+
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+
+            transform:
+                scaleX(-1);
+
+            background: #050509;
+        }
+
+
+        /* =================================================== */
+        /* CANVAS OVERLAY                                      */
+        /* =================================================== */
+
+        #overlay {
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            pointer-events: none;
+
+            z-index: 5;
+        }
+
+
+        /* =================================================== */
+        /* CAMERA PLACEHOLDER                                  */
+        /* =================================================== */
+
+        .camera-placeholder {
+
+            position: absolute;
+
+            inset: 0;
+
+            z-index: 3;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            text-align: center;
+
+            padding: 20px;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(
+                        124,
+                        58,
+                        237,
+                        0.16
+                    ),
+                    rgba(
+                        3,
+                        2,
+                        7,
+                        0.95
+                    )
+                );
+
+            transition:
+                opacity 0.3s ease;
+        }
+
+
+        .camera-placeholder.hidden {
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+
+        .camera-icon {
+
+            width: 75px;
+
+            height: 75px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.16
+                );
+
+            border:
+                1px solid
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.3
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 32px;
+
             margin-bottom: 16px;
         }
 
-        .emotion-header {
+
+        .camera-placeholder h3 {
+
+            font-size: 20px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .camera-placeholder p {
+
+            color: #91899f;
+
+            font-size: 14px;
+
+            max-width: 400px;
+        }
+
+
+        /* =================================================== */
+        /* LIVE INDICATOR                                      */
+        /* =================================================== */
+
+        .live-indicator {
+
+            position: absolute;
+
+            top: 15px;
+
+            left: 15px;
+
+            z-index: 10;
+
+            display: none;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                7px
+                12px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.65
+                );
+
+            backdrop-filter:
+                blur(8px);
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            letter-spacing:
+                0.5px;
+        }
+
+
+        .live-indicator.active {
+
             display: flex;
+        }
+
+
+        .live-dot {
+
+            width: 8px;
+
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #ef4444;
+
+            animation:
+                livePulse
+                1.2s
+                infinite;
+        }
+
+
+        @keyframes livePulse {
+
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.35;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+
+        /* =================================================== */
+        /* CAMERA CONTROLS                                    */
+        /* =================================================== */
+
+        .buttons {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-top: 20px;
+        }
+
+
+        button {
+
+            border: none;
+
+            outline: none;
+
+            padding:
+                12px
+                24px;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+
+        button:hover:not(:disabled) {
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        button:active:not(:disabled) {
+
+            transform:
+                translateY(0);
+        }
+
+
+        button:disabled {
+
+            opacity: 0.45;
+
+            cursor: not-allowed;
+        }
+
+
+        #startBtn {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #6d28d9
+                );
+
+            color: white;
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    124,
+                    58,
+                    237,
+                    0.3
+                );
+        }
+
+
+        #stopBtn {
+
+            background: #302b3d;
+
+            color: white;
+        }
+
+
+        #resetBtn {
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.07
+                );
+
+            color: #d5d0df;
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.1
+                );
+        }
+
+
+        /* =================================================== */
+        /* CAMERA STATUS                                      */
+        /* =================================================== */
+
+        .status {
+
+            text-align: center;
+
+            margin-top: 15px;
+
+            min-height: 24px;
+
+            color: #9e96ad;
+
+            font-size: 14px;
+        }
+
+
+        .status.success {
+
+            color: #4ade80;
+        }
+
+
+        .status.error {
+
+            color: #f87171;
+        }
+
+
+        .status.warning {
+
+            color: #fbbf24;
+        }
+
+
+        /* =================================================== */
+        /* DASHBOARD GRID                                     */
+        /* =================================================== */
+
+        .dashboard {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+
+            gap: 15px;
+
+            margin-bottom: 24px;
+        }
+
+
+        /* =================================================== */
+        /* DASHBOARD CARD                                     */
+        /* =================================================== */
+
+        .card {
+
+            background:
+                rgba(
+                    25,
+                    19,
+                    45,
+                    0.92
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.06
+                );
+
+            padding: 22px;
+
+            border-radius: 16px;
+
+            text-align: center;
+
+            min-height: 125px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+
+        .card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.25
+                );
+        }
+
+
+        .card-title {
+
+            color: #938ba3;
+
+            font-size: 13px;
+
+            margin-bottom: 9px;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.7px;
+        }
+
+
+        .card-value {
+
+            font-size: 27px;
+
+            font-weight: 800;
+
+            color: #ffffff;
+
+            word-break: break-word;
+        }
+
+
+        .card-value.accent {
+
+            color: #a78bfa;
+        }
+
+
+        /* =================================================== */
+        /* EMOTION SECTION                                    */
+        /* =================================================== */
+
+        .emotions {
+
+            background:
+                rgba(
+                    25,
+                    19,
+                    45,
+                    0.92
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.06
+                );
+
+            padding: 25px;
+
+            border-radius: 18px;
+
+            margin-bottom: 24px;
+        }
+
+
+        .emotion-section-header {
+
+            display: flex;
+
+            align-items: center;
+
             justify-content: space-between;
+
+            gap: 10px;
+
+            margin-bottom: 25px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .emotion-section-header h2 {
+
+            font-size: 22px;
+        }
+
+
+        .emotion-section-header span {
+
+            color: #81798e;
+
+            font-size: 13px;
+        }
+
+
+        /* =================================================== */
+        /* EMOTION ROW                                        */
+        /* =================================================== */
+
+        .emotion-row {
+
+            margin-bottom: 18px;
+        }
+
+
+        .emotion-row:last-child {
+
+            margin-bottom: 0;
+        }
+
+
+        .emotion-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 7px;
+
+            gap: 10px;
+        }
+
+
+        .emotion-name {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            color: #ded9e7;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        .emotion-icon {
+
+            width: 25px;
+
+            height: 25px;
+
+            border-radius: 7px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.12
+                );
+
+            font-size: 12px;
+        }
+
+
+        .emotion-value {
+
+            color: #c4b5fd;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        /* =================================================== */
+        /* PROGRESS BAR                                       */
+        /* =================================================== */
+
+        .bar {
+
+            width: 100%;
+
+            height: 11px;
+
+            background:
+                #2b253d;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                inset 0 1px 3px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.35
+                );
+        }
+
+
+        .fill {
+
+            height: 100%;
+
+            width: 0%;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #6d28d9,
+                    #a78bfa
+                );
+
+            transition:
+                width 0.5s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                );
+
+            box-shadow:
+                0 0 12px
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.25
+                );
+        }
+
+
+        /* =================================================== */
+        /* ACTIVE EMOTION                                     */
+        /* =================================================== */
+
+        .emotion-row.active {
+
+            padding:
+                9px
+                10px;
+
+            margin-left: -10px;
+
+            margin-right: -10px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.07
+                );
+        }
+
+
+        /* =================================================== */
+        /* ANALYSIS INFORMATION                                */
+        /* =================================================== */
+
+        .analysis-panel {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    1fr
+                );
+
+            gap: 15px;
+
+            margin-bottom: 24px;
+        }
+
+
+        .info-box {
+
+            background:
+                rgba(
+                    25,
+                    19,
+                    45,
+                    0.75
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.06
+                );
+
+            padding: 18px;
+
+            border-radius: 14px;
+        }
+
+
+        .info-label {
+
+            color: #81798e;
+
+            font-size: 12px;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.6px;
+
             margin-bottom: 6px;
         }
 
-        .bar {
-            width: 100%;
-            height: 10px;
-            background: #302847;
-            border-radius: 10px;
-            overflow: hidden;
+
+        .info-value {
+
+            color: #e7e2ef;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            word-break: break-word;
         }
 
-        .fill {
-            height: 100%;
-            width: 0%;
-            background: #8b5cf6;
-            transition: width 0.3s ease;
+
+        /* =================================================== */
+        /* MULTIPLE FACE PANEL                                */
+        /* =================================================== */
+
+        .faces-section {
+
+            background:
+                rgba(
+                    25,
+                    19,
+                    45,
+                    0.92
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.06
+                );
+
+            padding: 25px;
+
+            border-radius: 18px;
+
+            margin-bottom: 24px;
         }
 
-        .error {
-            color: #ff6b6b;
+
+        .faces-section h2 {
+
+            font-size: 21px;
+
+            margin-bottom: 18px;
         }
+
+
+        .face-list {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(
+                        220px,
+                        1fr
+                    )
+                );
+
+            gap: 12px;
+        }
+
+
+        .face-item {
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.035
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.06
+                );
+        }
+
+
+        .face-item-title {
+
+            color: #a78bfa;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+
+        .face-item-detail {
+
+            color: #9e96aa;
+
+            font-size: 13px;
+
+            margin-top: 4px;
+        }
+
+
+        /* =================================================== */
+        /* ERROR PANEL                                        */
+        /* =================================================== */
+
+        .error-panel {
+
+            display: none;
+
+            padding: 16px;
+
+            margin-bottom: 24px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(
+                    127,
+                    29,
+                    29,
+                    0.25
+                );
+
+            border:
+                1px solid
+                rgba(
+                    248,
+                    113,
+                    113,
+                    0.25
+                );
+
+            color: #fca5a5;
+
+            font-size: 13px;
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+        }
+
+
+        .error-panel.visible {
+
+            display: block;
+        }
+
+
+        /* =================================================== */
+        /* LOADING OVERLAY                                    */
+        /* =================================================== */
+
+        .loading-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 999;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                rgba(
+                    4,
+                    2,
+                    10,
+                    0.75
+                );
+
+            backdrop-filter:
+                blur(8px);
+        }
+
+
+        .loading-overlay.visible {
+
+            display: flex;
+        }
+
+
+        .loading-box {
+
+            background:
+                #19132d;
+
+            border:
+                1px solid
+                rgba(
+                    139,
+                    92,
+                    246,
+                    0.25
+                );
+
+            border-radius: 18px;
+
+            padding: 30px;
+
+            text-align: center;
+
+            min-width: 260px;
+        }
+
+
+        .spinner {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 50%;
+
+            border:
+                4px solid
+                #332a47;
+
+            border-top-color:
+                #a78bfa;
+
+            animation:
+                spin
+                0.8s
+                linear
+                infinite;
+
+            margin:
+                0 auto
+                15px;
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform:
+                    rotate(360deg);
+            }
+        }
+
+
+        .loading-box p {
+
+            color: #aaa3b6;
+
+            font-size: 14px;
+        }
+
+
+        /* =================================================== */
+        /* FOOTER                                              */
+        /* =================================================== */
 
         footer {
+
             text-align: center;
-            color: #777;
+
+            color: #6f6879;
+
             margin-top: 30px;
-            padding-bottom: 20px;
+
+            padding:
+                20px
+                10px;
+
+            font-size: 13px;
+
+            border-top:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.05
+                );
         }
+
+
+        footer strong {
+
+            color: #a78bfa;
+        }
+
+
+        /* =================================================== */
+        /* RESPONSIVE TABLET                                  */
+        /* =================================================== */
+
+        @media (
+            max-width: 900px
+        ) {
+
+            .dashboard {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        1fr
+                    );
+            }
+
+
+            .analysis-panel {
+
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+        }
+
+
+        /* =================================================== */
+        /* RESPONSIVE MOBILE                                  */
+        /* =================================================== */
+
+        @media (
+            max-width: 600px
+        ) {
+
+            .container {
+
+                padding:
+                    15px
+                    12px
+                    30px;
+            }
+
+
+            .header {
+
+                padding-bottom: 20px;
+            }
+
+
+            .logo-circle {
+
+                width: 58px;
+
+                height: 58px;
+
+                font-size: 25px;
+            }
+
+
+            .header h1 {
+
+                font-size: 30px;
+            }
+
+
+            .subtitle {
+
+                font-size: 14px;
+            }
+
+
+            .camera-section {
+
+                padding: 12px;
+
+                border-radius: 16px;
+            }
+
+
+            .camera-box {
+
+                border-radius: 12px;
+            }
+
+
+            .dashboard {
+
+                grid-template-columns:
+                    1fr 1fr;
+
+                gap: 10px;
+            }
+
+
+            .card {
+
+                padding: 16px;
+
+                min-height: 105px;
+            }
+
+
+            .card-value {
+
+                font-size: 22px;
+            }
+
+
+            .emotions {
+
+                padding: 18px;
+            }
+
+
+            .analysis-panel {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .buttons {
+
+                gap: 5px;
+            }
+
+
+            button {
+
+                flex:
+                    1 1 120px;
+
+                padding:
+                    11px
+                    14px;
+
+                font-size: 14px;
+            }
+
+        }
+
+
+        /* =================================================== */
+        /* REDUCED MOTION                                    */
+        /* =================================================== */
+
+        @media (
+            prefers-reduced-motion: reduce
+        ) {
+
+            * {
+
+                scroll-behavior: auto !important;
+
+                animation-duration:
+                    0.01ms !important;
+
+                animation-iteration-count:
+                    1 !important;
+
+                transition-duration:
+                    0.01ms !important;
+            }
+
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
+
+<!-- ========================================================= -->
+<!-- MAIN CONTAINER                                            -->
+<!-- ========================================================= -->
+
 <div class="container">
 
-    <h1>AI Emotion Detection</h1>
-    <div class="subtitle">
-        Real-time facial emotion analysis using AI
-    </div>
 
-    <div class="camera-section">
+    <!-- ===================================================== -->
+    <!-- HEADER                                                -->
+    <!-- ===================================================== -->
+
+    <header class="header">
+
+        <div class="logo-circle">
+            AI
+        </div>
+
+        <h1>
+            Emotion Detection Using AI
+        </h1>
+
+        <p class="subtitle">
+            Real-time facial emotion analysis using
+            OpenCV, DeepFace and artificial intelligence.
+        </p>
+
+
+        <div class="top-status">
+
+            <div class="status-pill">
+
+                <span
+                    class="status-dot"
+                    id="serverDot"
+                ></span>
+
+                <span id="serverStatus">
+                    Checking server...
+                </span>
+
+            </div>
+
+
+            <div class="status-pill">
+
+                <span
+                    class="status-dot"
+                    id="cameraDot"
+                ></span>
+
+                <span id="cameraStatus">
+                    Camera stopped
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ===================================================== -->
+    <!-- CAMERA SECTION                                        -->
+    <!-- ===================================================== -->
+
+    <section class="camera-section">
+
+
+        <div class="section-title">
+
+            <h2>
+                Live Camera
+            </h2>
+
+            <span id="resolutionText">
+                640 × 360
+            </span>
+
+        </div>
+
 
         <div class="camera-box">
-            <video id="camera" autoplay playsinline muted></video>
-            <canvas id="overlay"></canvas>
+
+
+            <!-- ============================================= -->
+            <!-- CAMERA VIDEO                                  -->
+            <!-- ============================================= -->
+
+            <video
+                id="camera"
+                autoplay
+                playsinline
+                muted
+            ></video>
+
+
+            <!-- ============================================= -->
+            <!-- CANVAS OVERLAY                                -->
+            <!-- ============================================= -->
+
+            <canvas
+                id="overlay"
+            ></canvas>
+
+
+            <!-- ============================================= -->
+            <!-- PLACEHOLDER                                  -->
+            <!-- ============================================= -->
+
+            <div
+                class="camera-placeholder"
+                id="cameraPlaceholder"
+            >
+
+                <div class="camera-icon">
+                    📷
+                </div>
+
+                <h3>
+                    Camera Ready
+                </h3>
+
+                <p>
+                    Click "Start Camera" to begin
+                    real-time AI emotion detection.
+                </p>
+
+            </div>
+
+
+            <!-- ============================================= -->
+            <!-- LIVE INDICATOR                               -->
+            <!-- ============================================= -->
+
+            <div
+                class="live-indicator"
+                id="liveIndicator"
+            >
+
+                <span class="live-dot"></span>
+
+                LIVE
+
+            </div>
+
+
         </div>
+
+
+        <!-- ================================================= -->
+        <!-- CAMERA BUTTONS                                    -->
+        <!-- ================================================= -->
 
         <div class="buttons">
-            <button id="startBtn">Start Camera</button>
-            <button id="stopBtn" disabled>Stop Camera</button>
+
+            <button
+                id="startBtn"
+                type="button"
+            >
+                ▶ Start Camera
+            </button>
+
+
+            <button
+                id="stopBtn"
+                type="button"
+                disabled
+            >
+                ■ Stop Camera
+            </button>
+
+
+            <button
+                id="resetBtn"
+                type="button"
+            >
+                ↻ Reset
+            </button>
+
         </div>
 
-        <div class="status" id="status">
+
+        <!-- ================================================= -->
+        <!-- CAMERA STATUS                                     -->
+        <!-- ================================================= -->
+
+        <div
+            class="status"
+            id="status"
+        >
             Camera is stopped.
         </div>
 
-    </div>
+    </section>
 
-    <div class="dashboard">
+
+    <!-- ===================================================== -->
+    <!-- ERROR PANEL                                           -->
+    <!-- ===================================================== -->
+
+    <div
+        class="error-panel"
+        id="errorPanel"
+    ></div>
+
+
+    <!-- ===================================================== -->
+    <!-- DASHBOARD                                             -->
+    <!-- ===================================================== -->
+
+    <section class="dashboard">
+
+
+        <!-- ================================================= -->
+        <!-- DETECTED EMOTION                                  -->
+        <!-- ================================================= -->
 
         <div class="card">
-            <div class="card-title">Detected Emotion</div>
-            <div class="card-value" id="emotion">—</div>
+
+            <div class="card-title">
+                Detected Emotion
+            </div>
+
+            <div
+                class="card-value accent"
+                id="emotion"
+            >
+                —
+            </div>
+
         </div>
+
+
+        <!-- ================================================= -->
+        <!-- CONFIDENCE                                        -->
+        <!-- ================================================= -->
 
         <div class="card">
-            <div class="card-title">Confidence</div>
-            <div class="card-value" id="confidence">0%</div>
+
+            <div class="card-title">
+                Confidence
+            </div>
+
+            <div
+                class="card-value"
+                id="confidence"
+            >
+                0.0%
+            </div>
+
         </div>
+
+
+        <!-- ================================================= -->
+        <!-- FACE COUNT                                        -->
+        <!-- ================================================= -->
 
         <div class="card">
-            <div class="card-title">Faces Detected</div>
-            <div class="card-value" id="faceCount">0</div>
-        </div>
 
-    </div>
-
-    <div class="emotions">
-
-        <h2>Emotion Analysis</h2>
-
-        <div class="emotion-row">
-            <div class="emotion-header">
-                <span>Happy</span>
-                <span id="happyValue">0%</span>
+            <div class="card-title">
+                Faces Detected
             </div>
-            <div class="bar"><div class="fill" id="happyBar"></div></div>
-        </div>
 
-        <div class="emotion-row">
-            <div class="emotion-header">
-                <span>Sad</span>
-                <span id="sadValue">0%</span>
+            <div
+                class="card-value"
+                id="faceCount"
+            >
+                0
             </div>
-            <div class="bar"><div class="fill" id="sadBar"></div></div>
+
         </div>
 
-        <div class="emotion-row">
-            <div class="emotion-header">
-                <span>Angry</span>
-                <span id="angryValue">0%</span>
+
+        <!-- ================================================= -->
+        <!-- PROCESSING TIME                                   -->
+        <!-- ================================================= -->
+
+        <div class="card">
+
+            <div class="card-title">
+                Processing
             </div>
-            <div class="bar"><div class="fill" id="angryBar"></div></div>
-        </div>
 
-        <div class="emotion-row">
-            <div class="emotion-header">
-                <span>Fear</span>
-                <span id="fearValue">0%</span>
+            <div
+                class="card-value"
+                id="processingTime"
+            >
+                0 ms
             </div>
-            <div class="bar"><div class="fill" id="fearBar"></div></div>
+
         </div>
 
-        <div class="emotion-row">
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- EMOTION ANALYSIS                                      -->
+    <!-- ===================================================== -->
+
+    <section class="emotions">
+
+
+        <div class="emotion-section-header">
+
+            <h2>
+                Emotion Analysis
+            </h2>
+
+            <span>
+                AI probability distribution
+            </span>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- HAPPY                                              -->
+        <!-- ================================================= -->
+
+        <div
+            class="emotion-row"
+            id="happyRow"
+        >
+
             <div class="emotion-header">
-                <span>Surprise</span>
-                <span id="surpriseValue">0%</span>
+
+                <div class="emotion-name">
+
+                    <span class="emotion-icon">
+                        😊
+                    </span>
+
+                    Happy
+
+                </div>
+
+                <span
+                    class="emotion-value"
+                    id="happyValue"
+                >
+                    0.0%
+                </span>
+
             </div>
-            <div class="bar"><div class="fill" id="surpriseBar"></div></div>
+
+            <div class="bar">
+
+                <div
+                    class="fill"
+                    id="happyBar"
+                ></div>
+
+            </div>
+
         </div>
 
-        <div class="emotion-row">
+
+        <!-- ================================================= -->
+        <!-- SAD                                                -->
+        <!-- ================================================= -->
+
+        <div
+            class="emotion-row"
+            id="sadRow"
+        >
+
             <div class="emotion-header">
-                <span>Disgust</span>
-                <span id="disgustValue">0%</span>
+
+                <div class="emotion-name">
+
+                    <span class="emotion-icon">
+                        😔
+                    </span>
+
+                    Sad
+
+                </div>
+
+                <span
+                    class="emotion-value"
+                    id="sadValue"
+                >
+                    0.0%
+                </span>
+
             </div>
-            <div class="bar"><div class="fill" id="disgustBar"></div></div>
+
+            <div class="bar">
+
+                <div
+                    class="fill"
+                    id="sadBar"
+                ></div>
+
+            </div>
+
         </div>
 
-        <div class="emotion-row">
+
+        <!-- ================================================= -->
+        <!-- ANGRY                                              -->
+        <!-- ================================================= -->
+
+        <div
+            class="emotion-row"
+            id="angryRow"
+        >
+
             <div class="emotion-header">
-                <span>Neutral</span>
-                <span id="neutralValue">0%</span>
+
+                <div class="emotion-name">
+
+                    <span class="emotion-icon">
+                        😠
+                    </span>
+
+                    Angry
+
+                </div>
+
+                <span
+                    class="emotion-value"
+                    id="angryValue"
+                >
+                    0.0%
+                </span>
+
             </div>
-            <div class="bar"><div class="fill" id="neutralBar"></div></div>
+
+            <div class="bar">
+
+                <div
+                    class="fill"
+                    id="angryBar"
+                ></div>
+
+            </div>
+
         </div>
 
-    </div>
+
+        <!-- ================================================= -->
+        <!-- FEAR                                               -->
+        <!-- ================================================= -->
+
+        <div
+            class="emotion-row"
+            id="fearRow"
+        >
+
+            <div class="emotion-header">
+
+                <div class="emotion-name">
+
+                    <span class="emotion-icon">
+                        😨
+                    </span>
+
+                    Fear
+
+                </div>
+
+                <span
+                    class="emotion-value"
+                    id="fearValue"
+                >
+                    0.0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div
+                    class="fill"
+                    id="fearBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- SURPRISE                                           -->
+        <!-- ================================================= -->
+
+        <div
+            class="emotion-row"
+            id="surpriseRow"
+        >
+
+            <div class="emotion-header">
+
+                <div class="emotion-name">
+
+                    <span class="emotion-icon">
+                        😮
+                    </span>
+
+                    Surprise
+
+                </div>
+
+                <span
+                    class="emotion-value"
+                    id="surpriseValue"
+                >
+                    0.0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div
+                    class="fill"
+                    id="surpriseBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- DISGUST                                            -->
+        <!-- ================================================= -->
+
+        <div
+            class="emotion-row"
+            id="disgustRow"
+        >
+
+            <div class="emotion-header">
+
+                <div class="emotion-name">
+
+                    <span class="emotion-icon">
+                        😖
+                    </span>
+
+                    Disgust
+
+                </div>
+
+                <span
+                    class="emotion-value"
+                    id="disgustValue"
+                >
+                    0.0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div
+                    class="fill"
+                    id="disgustBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- NEUTRAL                                            -->
+        <!-- ================================================= -->
+
+        <div
+            class="emotion-row"
+            id="neutralRow"
+        >
+
+            <div class="emotion-header">
+
+                <div class="emotion-name">
+
+                    <span class="emotion-icon">
+                        😐
+                    </span>
+
+                    Neutral
+
+                </div>
+
+                <span
+                    class="emotion-value"
+                    id="neutralValue"
+                >
+                    0.0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div
+                    class="fill"
+                    id="neutralBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- ANALYSIS INFORMATION                                  -->
+    <!-- ===================================================== -->
+
+    <section class="analysis-panel">
+
+
+        <div class="info-box">
+
+            <div class="info-label">
+                Analysis Status
+            </div>
+
+            <div
+                class="info-value"
+                id="analysisStatus"
+            >
+                Waiting
+            </div>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <div class="info-label">
+                Server Response
+            </div>
+
+            <div
+                class="info-value"
+                id="serverResponse"
+            >
+                Waiting
+            </div>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <div class="info-label">
+                Last Analysis
+            </div>
+
+            <div
+                class="info-value"
+                id="lastAnalysis"
+            >
+                —
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- MULTIPLE FACE INFORMATION                             -->
+    <!-- ===================================================== -->
+
+    <section class="faces-section">
+
+
+        <h2>
+            Detected Faces
+        </h2>
+
+
+        <div
+            class="face-list"
+            id="faceList"
+        >
+
+            <div class="face-item">
+
+                <div class="face-item-title">
+                    No faces detected
+                </div>
+
+                <div class="face-item-detail">
+                    Start the camera to begin analysis.
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- FOOTER                                                -->
+    <!-- ===================================================== -->
 
     <footer>
-        Powered by LeelaX | AI Emotion Detection Project
+
+        <strong>
+            Emotion Detection Using AI
+        </strong>
+
+        <br>
+
+        Powered by LeelaX |
+
+        OpenCV + DeepFace + Flask
+
     </footer>
+
 
 </div>
 
+
+<!-- ========================================================= -->
+<!-- LOADING OVERLAY                                           -->
+<!-- ========================================================= -->
+
+<div
+    class="loading-overlay"
+    id="loadingOverlay"
+>
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <p>
+            Initializing AI analysis...
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- JAVASCRIPT                                                -->
+<!-- ========================================================= -->
+
 <script>
 
-const video = document.getElementById("camera");
-const canvas = document.getElementById("overlay");
 
-const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
+/* ========================================================= */
+/* DOM ELEMENTS                                               */
+/* ========================================================= */
 
-const statusText = document.getElementById("status");
+const video =
+    document.getElementById(
+        "camera"
+    );
+
+
+const canvas =
+    document.getElementById(
+        "overlay"
+    );
+
+
+const startBtn =
+    document.getElementById(
+        "startBtn"
+    );
+
+
+const stopBtn =
+    document.getElementById(
+        "stopBtn"
+    );
+
+
+const resetBtn =
+    document.getElementById(
+        "resetBtn"
+    );
+
+
+const statusText =
+    document.getElementById(
+        "status"
+    );
+
+
+const cameraPlaceholder =
+    document.getElementById(
+        "cameraPlaceholder"
+    );
+
+
+const liveIndicator =
+    document.getElementById(
+        "liveIndicator"
+    );
+
+
+const serverDot =
+    document.getElementById(
+        "serverDot"
+    );
+
+
+const cameraDot =
+    document.getElementById(
+        "cameraDot"
+    );
+
+
+const serverStatus =
+    document.getElementById(
+        "serverStatus"
+    );
+
+
+const cameraStatus =
+    document.getElementById(
+        "cameraStatus"
+    );
+
+
+const errorPanel =
+    document.getElementById(
+        "errorPanel"
+    );
+
+
+const loadingOverlay =
+    document.getElementById(
+        "loadingOverlay"
+    );
+
+
+/* ========================================================= */
+/* APPLICATION VARIABLES                                     */
+/* ========================================================= */
 
 let stream = null;
+
 let analysisTimer = null;
+
 let analyzing = false;
 
-startBtn.addEventListener("click", startCamera);
-stopBtn.addEventListener("click", stopCamera);
+let serverOnline = false;
+
+let lastResult = null;
+
+let analysisCount = 0;
+
+let lastAnalysisTime = null;
+
+let currentFaceCount = 0;
+
+
+/* ========================================================= */
+/* EMOTION NAMES                                             */
+/* ========================================================= */
+
+const emotionNames = [
+
+    "happy",
+
+    "sad",
+
+    "angry",
+
+    "fear",
+
+    "surprise",
+
+    "disgust",
+
+    "neutral"
+
+];
+
+
+/* ========================================================= */
+/* EMOTION DISPLAY NAMES                                     */
+/* ========================================================= */
+
+const emotionDisplayNames = {
+
+    happy:
+        "Happy",
+
+    sad:
+        "Sad",
+
+    angry:
+        "Angry",
+
+    fear:
+        "Fear",
+
+    surprise:
+        "Surprise",
+
+    disgust:
+        "Disgust",
+
+    neutral:
+        "Neutral"
+
+};
+
+
+/* ========================================================= */
+/* START BUTTON                                              */
+/* ========================================================= */
+
+startBtn.addEventListener(
+
+    "click",
+
+    startCamera
+
+);
+
+
+/* ========================================================= */
+/* STOP BUTTON                                               */
+/* ========================================================= */
+
+stopBtn.addEventListener(
+
+    "click",
+
+    stopCamera
+
+);
+
+
+/* ========================================================= */
+/* RESET BUTTON                                              */
+/* ========================================================= */
+
+resetBtn.addEventListener(
+
+    "click",
+
+    resetApplication
+
+);
+
+
+/* ========================================================= */
+/* CHECK SERVER                                              */
+/* ========================================================= */
+
+async function checkServer() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/health",
+                {
+                    method:
+                        "GET",
+                    cache:
+                        "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server unavailable"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.status ===
+            "ok"
+        ) {
+
+            serverOnline =
+                true;
+
+            serverDot.classList.add(
+                "online"
+            );
+
+            serverDot.classList.remove(
+                "offline"
+            );
+
+            serverStatus.textContent =
+                "AI server online";
+
+        }
+
+        else {
+
+            throw new Error(
+                "Invalid server response"
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        serverOnline =
+            false;
+
+        serverDot.classList.remove(
+            "online"
+        );
+
+        serverDot.classList.add(
+            "offline"
+        );
+
+        serverStatus.textContent =
+            "AI server unavailable";
+
+    }
+
+}
+
+
+/* ========================================================= */
+/* START CAMERA                                              */
+/* ========================================================= */
 
 async function startCamera() {
 
+    clearError();
+
+
     try {
 
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                width: { ideal: 640 },
-                height: { ideal: 360 },
-                facingMode: "user"
-            },
-            audio: false
-        });
+        /* ------------------------------------------------- */
+        /* CHECK BROWSER SUPPORT                             */
+        /* ------------------------------------------------- */
 
-        video.srcObject = stream;
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
 
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
+            throw new Error(
+                "Your browser does not support camera access."
+            );
 
-        statusText.textContent = "Camera started. Analyzing...";
-        statusText.classList.remove("error");
+        }
 
-        analysisTimer = setInterval(analyzeFrame, 1000);
 
-    } catch (error) {
+        /* ------------------------------------------------- */
+        /* SHOW LOADING                                     */
+        /* ------------------------------------------------- */
 
-        console.error(error);
+        showLoading();
+
+
+        /* ------------------------------------------------- */
+        /* REQUEST CAMERA                                   */
+        /* ------------------------------------------------- */
+
+        stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+
+                    width: {
+                        ideal: 640
+                    },
+
+                    height: {
+                        ideal: 360
+                    },
+
+                    facingMode:
+                        "user"
+
+                },
+
+                audio:
+                    false
+
+            });
+
+
+        /* ------------------------------------------------- */
+        /* CONNECT STREAM                                   */
+        /* ------------------------------------------------- */
+
+        video.srcObject =
+            stream;
+
+
+        await video.play();
+
+
+        /* ------------------------------------------------- */
+        /* UPDATE CAMERA UI                                */
+        /* ------------------------------------------------- */
+
+        startBtn.disabled =
+            true;
+
+        stopBtn.disabled =
+            false;
+
+
+        cameraPlaceholder.classList.add(
+            "hidden"
+        );
+
+
+        liveIndicator.classList.add(
+            "active"
+        );
+
+
+        cameraDot.classList.add(
+            "online"
+        );
+
+
+        cameraDot.classList.remove(
+            "offline"
+        );
+
+
+        cameraStatus.textContent =
+            "Camera active";
+
 
         statusText.textContent =
-            "Camera permission was denied or camera is unavailable.";
+            "Camera started. Preparing AI analysis...";
 
-        statusText.classList.add("error");
+
+        statusText.className =
+            "status";
+
+
+        /* ------------------------------------------------- */
+        /* HIDE LOADING                                    */
+        /* ------------------------------------------------- */
+
+        hideLoading();
+
+
+        /* ------------------------------------------------- */
+        /* START ANALYSIS TIMER                             */
+        /* ------------------------------------------------- */
+
+        if (analysisTimer) {
+
+            clearInterval(
+                analysisTimer
+            );
+
+        }
+
+
+        analysisTimer =
+            setInterval(
+
+                analyzeFrame,
+
+                1200
+
+            );
+
+
+        /* ------------------------------------------------- */
+        /* FIRST ANALYSIS                                   */
+        /* ------------------------------------------------- */
+
+        setTimeout(
+
+            analyzeFrame,
+
+            400
+
+        );
+
     }
+
+
+    catch (error) {
+
+        hideLoading();
+
+
+        console.error(
+            "Camera error:",
+            error
+        );
+
+
+        showError(
+            "Camera error: " +
+            error.message
+        );
+
+
+        statusText.textContent =
+            "Camera permission was denied or the camera is unavailable.";
+
+
+        statusText.className =
+            "status error";
+
+
+        cameraDot.classList.remove(
+            "online"
+        );
+
+
+        cameraDot.classList.add(
+            "offline"
+        );
+
+
+        cameraStatus.textContent =
+            "Camera unavailable";
+
+    }
+
 }
+
+
+/* ========================================================= */
+/* STOP CAMERA                                               */
+/* ========================================================= */
 
 function stopCamera() {
 
+
+    /* ----------------------------------------------------- */
+    /* STOP TIMER                                            */
+    /* ----------------------------------------------------- */
+
     if (analysisTimer) {
-        clearInterval(analysisTimer);
-        analysisTimer = null;
+
+        clearInterval(
+            analysisTimer
+        );
+
+        analysisTimer =
+            null;
+
     }
+
+
+    /* ----------------------------------------------------- */
+    /* STOP STREAM                                           */
+    /* ----------------------------------------------------- */
 
     if (stream) {
 
-        stream.getTracks().forEach(track => track.stop());
+        stream
+            .getTracks()
+            .forEach(
 
-        stream = null;
+                track =>
+                    track.stop()
+
+            );
+
+        stream =
+            null;
+
     }
 
-    video.srcObject = null;
 
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
+    /* ----------------------------------------------------- */
+    /* REMOVE VIDEO SOURCE                                   */
+    /* ----------------------------------------------------- */
 
-    statusText.textContent = "Camera is stopped.";
+    video.srcObject =
+        null;
+
+
+    /* ----------------------------------------------------- */
+    /* UPDATE BUTTONS                                        */
+    /* ----------------------------------------------------- */
+
+    startBtn.disabled =
+        false;
+
+    stopBtn.disabled =
+        true;
+
+
+    /* ----------------------------------------------------- */
+    /* UPDATE UI                                             */
+    /* ----------------------------------------------------- */
+
+    cameraPlaceholder.classList.remove(
+        "hidden"
+    );
+
+
+    liveIndicator.classList.remove(
+        "active"
+    );
+
+
+    cameraDot.classList.remove(
+        "online"
+    );
+
+
+    cameraStatus.textContent =
+        "Camera stopped";
+
+
+    statusText.textContent =
+        "Camera is stopped.";
+
+
+    statusText.className =
+        "status";
+
 
     clearOverlay();
+
 }
+
+
+/* ========================================================= */
+/* ANALYZE FRAME                                             */
+/* ========================================================= */
 
 async function analyzeFrame() {
 
-    if (!stream || analyzing || video.readyState < 2) {
+
+    /* ----------------------------------------------------- */
+    /* PREVENT DUPLICATE REQUESTS                            */
+    /* ----------------------------------------------------- */
+
+    if (
+        !stream ||
+        analyzing ||
+        video.readyState < 2
+    ) {
+
         return;
+
     }
 
-    analyzing = true;
+
+    analyzing =
+        true;
+
 
     try {
 
-        const captureCanvas = document.createElement("canvas");
+        clearError();
 
-        captureCanvas.width = 640;
-        captureCanvas.height = 360;
 
-        const context = captureCanvas.getContext("2d");
+        /* ------------------------------------------------- */
+        /* CREATE CAPTURE CANVAS                            */
+        /* ------------------------------------------------- */
+
+        const captureCanvas =
+            document.createElement(
+                "canvas"
+            );
+
+
+        captureCanvas.width =
+            640;
+
+
+        captureCanvas.height =
+            360;
+
+
+        const context =
+            captureCanvas.getContext(
+                "2d"
+            );
+
+
+        /* ------------------------------------------------- */
+        /* DRAW VIDEO FRAME                                 */
+        /* ------------------------------------------------- */
+
+        context.save();
+
+
+        context.translate(
+            captureCanvas.width,
+            0
+        );
+
+
+        context.scale(
+            -1,
+            1
+        );
+
 
         context.drawImage(
+
             video,
+
             0,
+
             0,
+
             captureCanvas.width,
+
             captureCanvas.height
+
         );
 
-        const imageData = captureCanvas.toDataURL(
-            "image/jpeg",
-            0.75
-        );
 
-        const response = await fetch("/analyze", {
+        context.restore();
 
-            method: "POST",
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+        /* ------------------------------------------------- */
+        /* CONVERT TO JPEG                                 */
+        /* ------------------------------------------------- */
 
-            body: JSON.stringify({
-                frame: imageData
-            })
+        const imageData =
+            captureCanvas.toDataURL(
 
-        });
+                "image/jpeg",
 
-        const result = await response.json();
+                0.70
 
-        if (!response.ok || !result.success) {
-            throw new Error(result.error || "Analysis failed");
+            );
+
+
+        /* ------------------------------------------------- */
+        /* SEND TO FLASK                                    */
+        /* ------------------------------------------------- */
+
+        const requestStart =
+            performance.now();
+
+
+        const response =
+            await fetch(
+
+                "/analyze",
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            frame:
+                                imageData
+
+                        })
+
+                }
+
+            );
+
+
+        /* ------------------------------------------------- */
+        /* MEASURE NETWORK TIME                             */
+        /* ------------------------------------------------- */
+
+        const requestTime =
+            performance.now()
+            -
+            requestStart;
+
+
+        /* ------------------------------------------------- */
+        /* READ RESPONSE                                    */
+        /* ------------------------------------------------- */
+
+        const result =
+            await response.json();
+
+
+        /* ------------------------------------------------- */
+        /* HANDLE HTTP ERROR                                */
+        /* ------------------------------------------------- */
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                result.error ||
+                "Server analysis failed."
+
+            );
+
         }
 
-        updateDashboard(result);
 
-    } catch (error) {
+        /* ------------------------------------------------- */
+        /* HANDLE APPLICATION ERROR                         */
+        /* ------------------------------------------------- */
 
-        console.error("Analysis error:", error);
+        if (
+            !result.success
+        ) {
+
+            throw new Error(
+
+                result.error ||
+                "Analysis failed."
+
+            );
+
+        }
+
+
+        /* ------------------------------------------------- */
+        /* SAVE RESULT                                      */
+        /* ------------------------------------------------- */
+
+        lastResult =
+            result;
+
+
+        analysisCount++;
+
+
+        lastAnalysisTime =
+            new Date();
+
+
+        /* ------------------------------------------------- */
+        /* UPDATE DASHBOARD                                */
+        /* ------------------------------------------------- */
+
+        updateDashboard(
+            result
+        );
+
+
+        /* ------------------------------------------------- */
+        /* UPDATE INFORMATION                              */
+        /* ------------------------------------------------- */
+
+        updateAnalysisInfo(
+
+            result,
+
+            requestTime
+
+        );
+
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+
+            "Analysis error:",
+
+            error
+
+        );
+
+
+        showError(
+
+            "AI analysis error: " +
+            error.message
+
+        );
+
 
         statusText.textContent =
-            "Unable to connect to the AI analysis server.";
+            "Unable to complete AI analysis.";
 
-        statusText.classList.add("error");
 
-    } finally {
+        statusText.className =
+            "status error";
 
-        analyzing = false;
+
+        document.getElementById(
+            "analysisStatus"
+        ).textContent =
+            "Error";
+
     }
+
+
+    finally {
+
+        analyzing =
+            false;
+
+    }
+
 }
 
-function updateDashboard(result) {
 
-    statusText.textContent = "AI analysis running...";
-    statusText.classList.remove("error");
+/* ========================================================= */
+/* UPDATE DASHBOARD                                          */
+/* ========================================================= */
 
-    document.getElementById("faceCount").textContent =
-        result.face_count || 0;
+function updateDashboard(
+    result
+) {
+
+
+    /* ----------------------------------------------------- */
+    /* FACE COUNT                                           */
+    /* ----------------------------------------------------- */
+
+    const faceCount =
+        Number(
+            result.face_count || 0
+        );
+
+
+    currentFaceCount =
+        faceCount;
+
+
+    document.getElementById(
+        "faceCount"
+    ).textContent =
+        faceCount;
+
+
+    /* ----------------------------------------------------- */
+    /* PROCESSING TIME                                      */
+    /* ----------------------------------------------------- */
+
+    const processingTime =
+        Number(
+            result.processing_time || 0
+        );
+
+
+    document.getElementById(
+        "processingTime"
+    ).textContent =
+
+        Math.round(
+            processingTime * 1000
+        )
+
+        +
+
+        " ms";
+
+
+    /* ----------------------------------------------------- */
+    /* CLEAR OVERLAY                                        */
+    /* ----------------------------------------------------- */
 
     clearOverlay();
 
-    if (!result.faces || result.faces.length === 0) {
 
-        document.getElementById("emotion").textContent = "No face";
+    /* ----------------------------------------------------- */
+    /* NO FACE                                             */
+    /* ----------------------------------------------------- */
 
-        document.getElementById("confidence").textContent = "0%";
+    if (
+        !result.faces ||
+        result.faces.length === 0
+    ) {
+
+        document.getElementById(
+            "emotion"
+        ).textContent =
+            "No face";
+
+
+        document.getElementById(
+            "confidence"
+        ).textContent =
+            "0.0%";
+
 
         resetEmotionBars();
 
+
+        updateFaceList(
+            []
+        );
+
+
+        document.getElementById(
+            "analysisStatus"
+        ).textContent =
+            "Waiting for face";
+
+
+        statusText.textContent =
+            "No face detected. Please face the camera.";
+
+
+        statusText.className =
+            "status warning";
+
+
         return;
+
     }
 
-    const face = result.faces[0];
+
+    /* ----------------------------------------------------- */
+    /* USE FIRST FACE FOR MAIN DASHBOARD                   */
+    /* ----------------------------------------------------- */
+
+    const face =
+        result.faces[0];
+
+
+    /* ----------------------------------------------------- */
+    /* EMOTION                                             */
+    /* ----------------------------------------------------- */
 
     const emotion =
-        face.emotion || "neutral";
+        face.emotion;
+
+
+    if (emotion) {
+
+        document.getElementById(
+            "emotion"
+        ).textContent =
+            formatEmotionName(
+                emotion
+            );
+
+    }
+
+    else {
+
+        document.getElementById(
+            "emotion"
+        ).textContent =
+            "Analyzing";
+
+    }
+
+
+    /* ----------------------------------------------------- */
+    /* CONFIDENCE                                          */
+    /* ----------------------------------------------------- */
 
     const confidence =
-        face.confidence || 0;
+        Number(
+            face.confidence || 0
+        );
 
-    document.getElementById("emotion").textContent =
-        emotion.charAt(0).toUpperCase() + emotion.slice(1);
 
-    document.getElementById("confidence").textContent =
-        confidence.toFixed(1) + "%";
+    document.getElementById(
+        "confidence"
+    ).textContent =
 
-    updateEmotionBars(face.emotions || {});
+        confidence.toFixed(1)
 
-    drawFace(face);
+        +
+
+        "%";
+
+
+    /* ----------------------------------------------------- */
+    /* EMOTION BARS                                       */
+    /* ----------------------------------------------------- */
+
+    updateEmotionBars(
+
+        face.emotions || {},
+
+        emotion
+
+    );
+
+
+    /* ----------------------------------------------------- */
+    /* DRAW ALL FACES                                      */
+    /* ----------------------------------------------------- */
+
+    drawAllFaces(
+        result.faces
+    );
+
+
+    /* ----------------------------------------------------- */
+    /* FACE LIST                                           */
+    /* ----------------------------------------------------- */
+
+    updateFaceList(
+        result.faces
+    );
+
+
+    /* ----------------------------------------------------- */
+    /* STATUS                                             */
+    /* ----------------------------------------------------- */
+
+    if (
+        face.analysis_status ===
+        "success"
+    ) {
+
+        statusText.textContent =
+            "AI analysis running successfully.";
+
+
+        statusText.className =
+            "status success";
+
+
+        document.getElementById(
+            "analysisStatus"
+        ).textContent =
+            "Successful";
+
+    }
+
+    else {
+
+        statusText.textContent =
+            "Face detected, but emotion analysis failed.";
+
+
+        statusText.className =
+            "status error";
+
+
+        document.getElementById(
+            "analysisStatus"
+        ).textContent =
+            "Emotion analysis error";
+
+
+        if (
+            face.analysis_error
+        ) {
+
+            showError(
+                "DeepFace: " +
+                face.analysis_error
+            );
+
+        }
+
+    }
+
 }
 
-function updateEmotionBars(emotions) {
 
-    const names = [
-        "happy",
-        "sad",
-        "angry",
-        "fear",
-        "surprise",
-        "disgust",
-        "neutral"
-    ];
+/* ========================================================= */
+/* UPDATE EMOTION BARS                                      */
+/* ========================================================= */
 
-    names.forEach(name => {
+function updateEmotionBars(
+    emotions,
+    dominantEmotion
+) {
 
-        const value = Number(emotions[name] || 0);
 
-        document.getElementById(name + "Value").textContent =
-            value.toFixed(1) + "%";
+    emotionNames.forEach(
 
-        document.getElementById(name + "Bar").style.width =
-            Math.min(value, 100) + "%";
-    });
+        name => {
+
+
+            let value =
+                Number(
+                    emotions[name] || 0
+                );
+
+
+            if (
+                !Number.isFinite(
+                    value
+                )
+            ) {
+
+                value =
+                    0;
+
+            }
+
+
+            value =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        value
+                    )
+                );
+
+
+            const valueElement =
+                document.getElementById(
+                    name +
+                    "Value"
+                );
+
+
+            const barElement =
+                document.getElementById(
+                    name +
+                    "Bar"
+                );
+
+
+            const rowElement =
+                document.getElementById(
+                    name +
+                    "Row"
+                );
+
+
+            if (valueElement) {
+
+                valueElement.textContent =
+
+                    value.toFixed(1)
+
+                    +
+
+                    "%";
+
+            }
+
+
+            if (barElement) {
+
+                barElement.style.width =
+
+                    value +
+
+                    "%";
+
+            }
+
+
+            if (rowElement) {
+
+                if (
+                    name ===
+                    dominantEmotion
+                ) {
+
+                    rowElement.classList.add(
+                        "active"
+                    );
+
+                }
+
+                else {
+
+                    rowElement.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+
+        }
+
+    );
+
 }
+
+
+/* ========================================================= */
+/* RESET EMOTION BARS                                       */
+/* ========================================================= */
 
 function resetEmotionBars() {
 
-    const names = [
-        "happy",
-        "sad",
-        "angry",
-        "fear",
-        "surprise",
-        "disgust",
-        "neutral"
-    ];
 
-    names.forEach(name => {
+    emotionNames.forEach(
 
-        document.getElementById(name + "Value").textContent =
-            "0%";
+        name => {
 
-        document.getElementById(name + "Bar").style.width =
-            "0%";
-    });
+
+            const valueElement =
+                document.getElementById(
+                    name +
+                    "Value"
+                );
+
+
+            const barElement =
+                document.getElementById(
+                    name +
+                    "Bar"
+                );
+
+
+            const rowElement =
+                document.getElementById(
+                    name +
+                    "Row"
+                );
+
+
+            if (valueElement) {
+
+                valueElement.textContent =
+                    "0.0%";
+
+            }
+
+
+            if (barElement) {
+
+                barElement.style.width =
+                    "0%";
+
+            }
+
+
+            if (rowElement) {
+
+                rowElement.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+
+    );
+
 }
 
-function drawFace(face) {
 
-    const rect = video.getBoundingClientRect();
+/* ========================================================= */
+/* DRAW ALL FACES                                           */
+/* ========================================================= */
 
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 360;
+function drawAllFaces(
+    faces
+) {
 
-    canvas.style.width = rect.width + "px";
-    canvas.style.height = rect.height + "px";
 
-    const ctx = canvas.getContext("2d");
+    if (
+        !faces ||
+        faces.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const rect =
+        video.getBoundingClientRect();
+
+
+    const videoWidth =
+        video.videoWidth ||
+        640;
+
+
+    const videoHeight =
+        video.videoHeight ||
+        360;
+
+
+    canvas.width =
+        videoWidth;
+
+
+    canvas.height =
+        videoHeight;
+
+
+    canvas.style.width =
+        rect.width +
+        "px";
+
+
+    canvas.style.height =
+        rect.height +
+        "px";
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
 
     ctx.clearRect(
+
         0,
+
         0,
+
         canvas.width,
+
         canvas.height
+
     );
+
+
+    /* ----------------------------------------------------- */
+    /* SCALE FACTORS                                        */
+    /* ----------------------------------------------------- */
 
     const scaleX =
-        canvas.width / 640;
+        canvas.width /
+        640;
+
 
     const scaleY =
-        canvas.height / 360;
+        canvas.height /
+        360;
 
-    const x = face.x * scaleX;
-    const y = face.y * scaleY;
-    const w = face.w * scaleX;
-    const h = face.h * scaleY;
 
-    ctx.strokeStyle = "#8b5cf6";
-    ctx.lineWidth = 3;
+    /* ----------------------------------------------------- */
+    /* DRAW EACH FACE                                       */
+    /* ----------------------------------------------------- */
 
-    ctx.strokeRect(
-        x,
-        y,
-        w,
-        h
+    faces.forEach(
+
+        (face, index) => {
+
+
+            const x =
+                face.x *
+                scaleX;
+
+
+            const y =
+                face.y *
+                scaleY;
+
+
+            const w =
+                face.w *
+                scaleX;
+
+
+            const h =
+                face.h *
+                scaleY;
+
+
+            /* --------------------------------------------- */
+            /* FACE COLOR                                   */
+            /* --------------------------------------------- */
+
+            ctx.strokeStyle =
+                "#a78bfa";
+
+
+            ctx.lineWidth =
+                3;
+
+
+            /* --------------------------------------------- */
+            /* FACE BOX                                     */
+            /* --------------------------------------------- */
+
+            ctx.strokeRect(
+
+                x,
+
+                y,
+
+                w,
+
+                h
+
+            );
+
+
+            /* --------------------------------------------- */
+            /* LABEL                                        */
+            /* --------------------------------------------- */
+
+            const labelEmotion =
+                face.emotion
+                    ?
+                    formatEmotionName(
+                        face.emotion
+                    )
+                    :
+                    "Analyzing";
+
+
+            const label =
+                "FACE " +
+                (index + 1) +
+                " • " +
+                labelEmotion;
+
+
+            ctx.font =
+                "bold 16px Arial";
+
+
+            const textWidth =
+                ctx.measureText(
+                    label
+                ).width;
+
+
+            const labelHeight =
+                25;
+
+
+            const labelY =
+                Math.max(
+                    0,
+                    y - labelHeight
+                );
+
+
+            ctx.fillStyle =
+                "rgba(0, 0, 0, 0.70)";
+
+
+            ctx.fillRect(
+
+                x,
+
+                labelY,
+
+                textWidth + 16,
+
+                labelHeight
+
+            );
+
+
+            ctx.fillStyle =
+                "#c4b5fd";
+
+
+            ctx.fillText(
+
+                label,
+
+                x + 8,
+
+                labelY + 17
+
+            );
+
+
+            /* --------------------------------------------- */
+            /* DRAW EYES                                    */
+            /* --------------------------------------------- */
+
+            if (
+                face.eyes &&
+                face.eyes.length
+            ) {
+
+                face.eyes.forEach(
+
+                    eye => {
+
+
+                        ctx.strokeStyle =
+                            "#22d3ee";
+
+
+                        ctx.lineWidth =
+                            2;
+
+
+                        ctx.strokeRect(
+
+                            eye.x *
+                                scaleX,
+
+                            eye.y *
+                                scaleY,
+
+                            eye.w *
+                                scaleX,
+
+                            eye.h *
+                                scaleY
+
+                        );
+
+                    }
+
+                );
+
+            }
+
+
+            /* --------------------------------------------- */
+            /* DRAW SMILE                                   */
+            /* --------------------------------------------- */
+
+            if (face.smile) {
+
+                ctx.strokeStyle =
+                    "#ec4899";
+
+
+                ctx.lineWidth =
+                    2;
+
+
+                ctx.strokeRect(
+
+                    face.smile.x *
+                        scaleX,
+
+                    face.smile.y *
+                        scaleY,
+
+                    face.smile.w *
+                        scaleX,
+
+                    face.smile.h *
+                        scaleY
+
+                );
+
+            }
+
+        }
+
     );
 
-    ctx.font = "bold 18px Arial";
-
-    ctx.fillStyle = "#8b5cf6";
-
-    const label =
-        (face.emotion || "neutral").toUpperCase();
-
-    ctx.fillText(
-        label,
-        x,
-        Math.max(22, y - 8)
-    );
 }
+
+
+/* ========================================================= */
+/* UPDATE FACE LIST                                          */
+/* ========================================================= */
+
+function updateFaceList(
+    faces
+) {
+
+
+    const list =
+        document.getElementById(
+            "faceList"
+        );
+
+
+    list.innerHTML =
+        "";
+
+
+    if (
+        !faces ||
+        faces.length === 0
+    ) {
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+
+        item.className =
+            "face-item";
+
+
+        item.innerHTML =
+
+            '<div class="face-item-title">' +
+
+            'No faces detected' +
+
+            '</div>' +
+
+            '<div class="face-item-detail">' +
+
+            'Start the camera to begin analysis.' +
+
+            '</div>';
+
+
+        list.appendChild(
+            item
+        );
+
+
+        return;
+
+    }
+
+
+    faces.forEach(
+
+        (face, index) => {
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "face-item";
+
+
+            const emotion =
+                face.emotion
+                    ?
+                    formatEmotionName(
+                        face.emotion
+                    )
+                    :
+                    "Analyzing";
+
+
+            const confidence =
+                Number(
+                    face.confidence || 0
+                );
+
+
+            const eyeCount =
+                face.eyes
+                    ?
+                    face.eyes.length
+                    :
+                    0;
+
+
+            const smileStatus =
+                face.smile
+                    ?
+                    "Detected"
+                    :
+                    "Not detected";
+
+
+            item.innerHTML =
+
+                '<div class="face-item-title">' +
+
+                'Face ' +
+                (index + 1) +
+
+                '</div>' +
+
+                '<div class="face-item-detail">' +
+
+                'Emotion: ' +
+                escapeHtml(
+                    emotion
+                ) +
+
+                '</div>' +
+
+                '<div class="face-item-detail">' +
+
+                'Confidence: ' +
+                confidence.toFixed(1) +
+                '%' +
+
+                '</div>' +
+
+                '<div class="face-item-detail">' +
+
+                'Eyes: ' +
+                eyeCount +
+
+                '</div>' +
+
+                '<div class="face-item-detail">' +
+
+                'Smile: ' +
+                smileStatus +
+
+                '</div>';
+
+
+            list.appendChild(
+                item
+            );
+
+        }
+
+    );
+
+}
+
+
+/* ========================================================= */
+/* UPDATE ANALYSIS INFORMATION                               */
+/* ========================================================= */
+
+function updateAnalysisInfo(
+    result,
+    requestTime
+) {
+
+
+    document.getElementById(
+        "analysisStatus"
+    ).textContent =
+
+        result.analysis_success
+            ?
+            "Successful"
+            :
+            "Face detected";
+
+
+    document.getElementById(
+        "serverResponse"
+    ).textContent =
+
+        Math.round(
+            requestTime
+        ) +
+
+        " ms";
+
+
+    document.getElementById(
+        "lastAnalysis"
+    ).textContent =
+
+        new Date().toLocaleTimeString();
+
+
+}
+
+
+/* ========================================================= */
+/* FORMAT EMOTION NAME                                       */
+/* ========================================================= */
+
+function formatEmotionName(
+    emotion
+) {
+
+
+    if (!emotion) {
+
+        return "Unknown";
+
+    }
+
+
+    const normalized =
+        String(
+            emotion
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+        emotionDisplayNames[
+            normalized
+        ]
+    ) {
+
+        return emotionDisplayNames[
+            normalized
+        ];
+
+    }
+
+
+    return normalized
+        .charAt(0)
+        .toUpperCase()
+
+        +
+
+        normalized.slice(1);
+
+}
+
+
+/* ========================================================= */
+/* SHOW ERROR                                                */
+/* ========================================================= */
+
+function showError(
+    message
+) {
+
+
+    errorPanel.textContent =
+        message;
+
+
+    errorPanel.classList.add(
+        "visible"
+    );
+
+}
+
+
+/* ========================================================= */
+/* CLEAR ERROR                                               */
+/* ========================================================= */
+
+function clearError() {
+
+
+    errorPanel.textContent =
+        "";
+
+
+    errorPanel.classList.remove(
+        "visible"
+    );
+
+}
+
+
+/* ========================================================= */
+/* CLEAR OVERLAY                                             */
+/* ========================================================= */
 
 function clearOverlay() {
 
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 360;
 
-    const ctx = canvas.getContext("2d");
+    const width =
+        video.videoWidth ||
+        640;
+
+
+    const height =
+        video.videoHeight ||
+        360;
+
+
+    canvas.width =
+        width;
+
+
+    canvas.height =
+        height;
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
 
     ctx.clearRect(
+
         0,
+
         0,
+
         canvas.width,
+
         canvas.height
+
     );
+
 }
+
+
+/* ========================================================= */
+/* RESET APPLICATION                                         */
+/* ========================================================= */
+
+function resetApplication() {
+
+
+    stopCamera();
+
+
+    clearError();
+
+
+    document.getElementById(
+        "emotion"
+    ).textContent =
+        "—";
+
+
+    document.getElementById(
+        "confidence"
+    ).textContent =
+        "0.0%";
+
+
+    document.getElementById(
+        "faceCount"
+    ).textContent =
+        "0";
+
+
+    document.getElementById(
+        "processingTime"
+    ).textContent =
+        "0 ms";
+
+
+    document.getElementById(
+        "analysisStatus"
+    ).textContent =
+        "Waiting";
+
+
+    document.getElementById(
+        "serverResponse"
+    ).textContent =
+        "Waiting";
+
+
+    document.getElementById(
+        "lastAnalysis"
+    ).textContent =
+        "—";
+
+
+    resetEmotionBars();
+
+
+    updateFaceList(
+        []
+    );
+
+
+    analysisCount =
+        0;
+
+
+    lastResult =
+        null;
+
+
+    statusText.textContent =
+        "Application reset.";
+
+
+    statusText.className =
+        "status";
+
+
+    setTimeout(
+
+        () => {
+
+            statusText.textContent =
+                "Camera is stopped.";
+
+        },
+
+        1500
+
+    );
+
+}
+
+
+/* ========================================================= */
+/* LOADING FUNCTIONS                                         */
+/* ========================================================= */
+
+function showLoading() {
+
+    loadingOverlay.classList.add(
+        "visible"
+    );
+
+}
+
+
+function hideLoading() {
+
+    loadingOverlay.classList.remove(
+        "visible"
+    );
+
+}
+
+
+/* ========================================================= */
+/* HTML ESCAPE                                               */
+/* ========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+
+    return String(
+        value
+    )
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* ========================================================= */
+/* CAMERA CLEANUP                                            */
+/* ========================================================= */
+
+window.addEventListener(
+
+    "beforeunload",
+
+    () => {
+
+
+        if (analysisTimer) {
+
+            clearInterval(
+                analysisTimer
+            );
+
+        }
+
+
+        if (stream) {
+
+            stream
+                .getTracks()
+                .forEach(
+
+                    track =>
+                        track.stop()
+
+                );
+
+        }
+
+    }
+
+);
+
+
+/* ========================================================= */
+/* INITIAL PAGE LOAD                                         */
+/* ========================================================= */
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    () => {
+
+
+        /* ------------------------------------------------- */
+        /* RESET INITIAL UI                                 */
+        /* ------------------------------------------------- */
+
+        resetEmotionBars();
+
+
+        /* ------------------------------------------------- */
+        /* CHECK SERVER                                    */
+        /* ------------------------------------------------- */
+
+        checkServer();
+
+
+        /* ------------------------------------------------- */
+        /* CHECK SERVER PERIODICALLY                       */
+        /* ------------------------------------------------- */
+
+        setInterval(
+
+            checkServer,
+
+            15000
+
+        );
+
+    }
+
+);
+
+
+/* ========================================================= */
+/* VIDEO METADATA                                            */
+/* ========================================================= */
+
+video.addEventListener(
+
+    "loadedmetadata",
+
+    () => {
+
+
+        const width =
+            video.videoWidth ||
+            640;
+
+
+        const height =
+            video.videoHeight ||
+            360;
+
+
+        document.getElementById(
+            "resolutionText"
+        ).textContent =
+
+            width +
+
+            " × " +
+
+            height;
+
+    }
+
+);
+
+
+/* ========================================================= */
+/* CAMERA ERROR EVENT                                        */
+/* ========================================================= */
+
+video.addEventListener(
+
+    "error",
+
+    () => {
+
+
+        showError(
+            "The browser could not display the camera stream."
+        );
+
+
+        statusText.textContent =
+            "Camera stream error.";
+
+
+        statusText.className =
+            "status error";
+
+    }
+
+);
+
+
+/* ========================================================= */
+/* PAGE VISIBILITY                                            */
+/* ========================================================= */
+
+document.addEventListener(
+
+    "visibilitychange",
+
+    () => {
+
+
+        if (
+            document.hidden
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            stream &&
+            !analyzing
+        ) {
+
+            setTimeout(
+
+                analyzeFrame,
+
+                300
+
+            );
+
+        }
+
+    }
+
+);
+
+
+/* ========================================================= */
+/* FINAL INITIALIZATION                                      */
+/* ========================================================= */
+
+console.log(
+    "Emotion Detection Using AI initialized."
+);
+
+
+console.log(
+    "Supported emotions:",
+    emotionNames
+);
+
 
 </script>
 
+
 </body>
+
 </html>
